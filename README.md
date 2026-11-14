@@ -47,13 +47,13 @@ It is **receive-only**: it never transmits.
 - **SigMF recordings:** when an event starts, the I/Q of the dwell just before it and the next dwell at that frequency (about 0.1 s at 2.4 MS/s) are saved as `.sigmf-data` (`cf32_le`) + `.sigmf-meta`, one capture segment per dwell (`core:frequency`, `core:datetime`) and an annotation with the event's frequency edges, label and description. Open them in inspectrum, GNU Radio, MATLAB or Python (`sigmf`).
 
 ### 🎬 Try it without hardware
-**Try the demo** (or start with `--demo`) runs a pretend VHF band, 144-174 MHz, through the whole receive chain (8-bit I/Q, FFT, stitching, detection, recording): amateur repeaters, business radios, pagers, marine channel 16, railroad and three NOAA weather transmitters. After about 40 seconds, one after another: a new transmitter at 155.100 MHz, the 162.475 MHz NOAA transmitter goes off the air, the noise floor rises 6 dB from 164 to 170 MHz, 2 MHz of wideband interference appears at 149 MHz, and a transmitter at 158.300 MHz starts sending on-off bursts.
+**Try the demo** (or start with `--demo`) plays a built-in VHF band, 144-174 MHz, through the whole receive chain (8-bit I/Q, FFT, stitching, detection, recording): amateur repeaters, business radios, pagers, marine channel 16, railroad and three NOAA weather transmitters. After about 40 seconds, one after another: a new transmitter at 155.100 MHz, the 162.475 MHz NOAA transmitter goes off the air, the noise floor rises 6 dB from 164 to 170 MHz, 2 MHz of wideband interference appears at 149 MHz, and a transmitter at 158.300 MHz starts sending on-off bursts.
 
 ---
 
 ## How the machine learning is built
 
-- **Data:** a C# dataset generator uses the app's own simulator, `Baseline` and `PatchFeatures` code: thousands of random bands (steady carriers, digital channels, broadcast-width signals, busy and scheduled channels, fading, floor ripple, gain drift), a baseline learned from 25-120 sweeps each, then patches from fresh sweeps. Training uses **normal patches only** (unsupervised). Validation and test sets add five kinds of injected anomaly: new transmitter, missing signal, noise floor rise, wideband interference, intermittent burst.
+- **Data:** a C# dataset generator uses the app's own scene generator, `Baseline` and `PatchFeatures` code: thousands of random bands (steady carriers, digital channels, broadcast-width signals, busy and scheduled channels, fading, floor ripple, gain drift), a baseline learned from 25-120 sweeps each, then patches from fresh sweeps. Training uses **normal patches only** (unsupervised). Validation and test sets add five kinds of injected anomaly: new transmitter, missing signal, noise floor rise, wideband interference, intermittent burst.
 - **Model:** conditional autoencoder, `384 -> 256 -> 64 -> 16` encoder, `16 + 128 -> 128 -> 256 -> 256` decoder (the baseline context feeds both halves), 233k parameters, MSE loss on normal patches, Adam, early stopping. Score = reconstruction error + latent Mahalanobis distance, computed inside the ONNX graph.
 - **Evaluation:** ROC-AUC, precision, recall and F1 at fixed false-alarm rates (0.1% and 1%), per anomaly kind and per strength, against a per-bin threshold, a patch-energy detector and a reconstruction-error-only ablation.
 - **Result on the held-out test set** (83,940 patches, separate seed, thresholds set on a separate validation set): the **hybrid** detector (autoencoder + per-bin threshold, the app's default) finds **90.3%** of anomalous patches at a **0.1% false-alarm rate** (precision 0.996, ROC-AUC 0.990), against **88.1%** for the classic per-bin threshold and 83.5% for a patch-energy detector. On its own the autoencoder catches **85.0%** of noise-floor rises (per-bin threshold: 65.3%) and **76.7%** of anomalies weaker than 3 dB (per-bin threshold: 39.1%); the per-bin threshold is better at strong narrow signals, which is why the app combines them.
@@ -70,7 +70,7 @@ It is **receive-only**: it never transmits.
 | Machine learning | Patch features, ONNX Runtime autoencoder, per-bin threshold baseline, training pipeline, model card |
 | Detection | Patch scoring, localisation, plain-language typing, event lifecycle, JSON Lines / CSV |
 | Recording | SigMF metadata + `cf32_le` / `ci8` dataset with SHA-512 |
-| Simulation | Band scenes, spectrum-level simulator, I/Q demo dongle (frequency-domain shaped noise), demo timeline |
+| Demo engine | Band scenes, spectrum-level scene generator, I/Q demo dongle (frequency-domain shaped noise), demo timeline |
 | UI | WPF: status banner, spectrum-vs-normal plot, waterfall with anomaly tint, event table |
 
 ## Requirements

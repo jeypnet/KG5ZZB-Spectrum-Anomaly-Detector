@@ -1,6 +1,6 @@
 # Spectrum autoencoder: model card
 
-simulator, the baseline or the patch features change.
+scene generator, the baseline or the patch features change.
 
 ## What it does
 The app compares every new sweep with what it has learned is normal for each frequency bin
@@ -27,13 +27,13 @@ floor, quite well; those still push the code to places normal patches never reac
 "reconstruction error only" row below shows what the second term adds.
 
 ## Data
-- **Simulator:** . Each scene is a random band of
+- **Scene generator:** Each scene is a random band of
   768 bins at 2.3-18.8 kHz resolution with 3-21 emitters: steady carriers, digital channels,
   broadcast-width signals, busy channels that switch on/off at random, scheduled
   transmitters (pagers, beacons), slow fading, a rippled noise floor, slow gain wander and
   sweep-to-sweep gain jitter. Each bin's measurement has the spread of an averaged
   periodogram with 23-1875 averages (10-100 ms dwells).
-- **Baseline:** learned from 25-120 simulated sweeps per scene with the app's own `Baseline` class.
+- **Baseline:** learned from 25-120 generated sweeps per scene with the app's own `Baseline` class.
   A switching emitter that the learning period never saw on (at least twice) is kept off in
   that scene's normal data: from the baseline's point of view it would be a new transmitter.
 - **Patches:** built with the app's own `PatchFeatures` code (the same code that runs live).
