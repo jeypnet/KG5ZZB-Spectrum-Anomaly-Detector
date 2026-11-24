@@ -2,6 +2,8 @@
 
 ![Spectrum Anomaly Detector: learns what normal looks like on any band and flags what changed](docs/cover.png)
 
+[![Connect on LinkedIn](https://img.shields.io/badge/Connect_on_LinkedIn-0A66C2?style=for-the-badge)](https://www.linkedin.com/in/jeypnet/)
+
 <img src="docs/icon.png" width="96" align="right" alt="App icon: an amber spectrum trace with a spike under a magnifying glass">
 
 **Spectrum monitoring and interference hunting for Windows with a low-cost RTL-SDR: the app learns what is normal in a radio band, and a neural-network autoencoder flags what changes, in plain words, with the I/Q saved as SigMF.**
@@ -94,6 +96,9 @@ It is **receive-only**: it never transmits.
 ## Source code
 This repository is the public showcase: description, results, model card and images.
 The source code is private. Technical walkthroughs are available on request.
+
+## Contact
+Into ham radio, RF, SDR or aviation? **[Let's connect on LinkedIn](https://www.linkedin.com/in/jeypnet/)**. I share new radio apps, RF projects and what I learn along the way.
 
 ## License
 Copyright (c) 2026 KG5ZZB. All rights reserved. Text and images may not be reused without permission.
